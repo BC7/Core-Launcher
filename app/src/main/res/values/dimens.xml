@@ -1,3 +1,20 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="list_item_height">88dp</dimen>
+    <dimen name="list_item_icon_height">64dp</dimen>
+    <dimen name="list_item_icon_margin_bottom">24dp</dimen>
+    <dimen name="list_item_icon_max_height">56dp</dimen>
+    <dimen name="list_item_name_text_size">16sp</dimen>
+
+    <dimen name="margin_tiny">4dp</dimen>
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="margin_medium">16dp</dimen>
+    <dimen name="margin_large">32dp</dimen>
+    <dimen name="margin_huge">64dp</dimen>
+
+    <dimen name="padding_small">8dp</dimen>
+    <dimen name="padding_medium">16dp</dimen>
+    <dimen name="padding_large">32dp</dimen>
+    <dimen name="padding_huge">64dp</dimen>
 </resources>

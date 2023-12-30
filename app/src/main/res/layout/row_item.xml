@@ -6,6 +6,7 @@
     android:layout_marginTop="@dimen/margin_medium"
     android:layout_marginBottom="@dimen/margin_medium"
     android:gravity="center_vertical"
+    android:id="@+id/drawerItem"
     >
 
     <ImageView
