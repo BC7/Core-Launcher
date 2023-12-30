@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
-import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import com.sevenbitstudios.corelauncher.databinding.FragmentHomeBinding;
@@ -18,7 +17,7 @@ public class HomeFragment extends Fragment {
 
     @Override
     public View onCreateView(
-            @NonNull LayoutInflater inflater, ViewGroup container,
+            LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
 
@@ -26,14 +25,13 @@ public class HomeFragment extends Fragment {
 
         View rootView = homeBinding.getRoot();
 
-        initializeGridDrawer(rootView);
-
         return rootView;
-
     }
 
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        initializeGridDrawer(view);
     }
 
 

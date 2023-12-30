@@ -17,7 +17,6 @@
         <activity
             android:name="com.sevenbitstudios.corelauncher.MainActivity"
             android:exported="true"
-            android:theme="@style/app_theme"
             android:launchMode="singleTask"
             android:stateNotNeeded="true">
 
