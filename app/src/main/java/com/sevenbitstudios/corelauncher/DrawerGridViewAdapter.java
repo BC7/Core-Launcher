@@ -1,12 +1,15 @@
 package com.sevenbitstudios.corelauncher;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.util.List;
 
@@ -44,11 +47,23 @@ public class DrawerGridViewAdapter extends BaseAdapter {
             v = convertView;
         }
 
+        ConstraintLayout appTile = v.findViewById((R.id.appItemLayout));
         ImageView mImage = v.findViewById(R.id.appItemIcon);
         TextView mLabel = v.findViewById(R.id.appItemNameLabel);
 
         mImage.setImageDrawable(appListDataSet.get(position).getIcon());
         mLabel.setText(appListDataSet.get(position).getName());
+
+        appTile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent launAppIntent = context.getPackageManager().getLaunchIntentForPackage(appListDataSet.get(position).getPackageName());
+
+                if (launAppIntent != null){
+                    context.startActivity(launAppIntent);
+                }
+            }
+        });
 
         return v;
     }
