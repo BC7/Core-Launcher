@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             style="@style/Widget.Design.BottomSheet.Modal"
             app:behavior_hideable="false"
-            app:behavior_peekHeight="100dp"
+            app:behavior_peekHeight="170dp"
             app:layout_behavior="@string/bottom_sheet_behavior"
             >
             <GridView
