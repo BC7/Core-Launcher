@@ -9,7 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
-import androidx.core.content.res.ResourcesCompat;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -23,18 +24,16 @@ public class HomeFragment extends Fragment {
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container,
+            @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
 
         FragmentHomeBinding homeBinding = FragmentHomeBinding.inflate(inflater, container, false);
 
-        View rootView = homeBinding.getRoot();
-
-        return rootView;
+        return homeBinding.getRoot();
     }
 
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         initializeGridDrawer(view);
@@ -44,12 +43,28 @@ public class HomeFragment extends Fragment {
     private void initializeGridDrawer(View view) {
         GridView mHomeDrawerGridView = view.findViewById(R.id.homeDrawerGrid);
         View mBottomSheet = view.findViewById((R.id.homeBottomSheet));
-        BottomSheetBehavior mbottomSheetBehavior = BottomSheetBehavior.from(mBottomSheet);
+        final BottomSheetBehavior<View> mbottomSheetBehavior = BottomSheetBehavior.from(mBottomSheet);
 
         appList = getInstalledApps();
 
-
         mHomeDrawerGridView.setAdapter(new DrawerGridViewAdapter(view.getContext(), appList));
+
+        mbottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_HIDDEN && mHomeDrawerGridView.getChildAt(0).getY() != 0){
+                    mbottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                }
+                if (newState == BottomSheetBehavior.STATE_DRAGGING && mHomeDrawerGridView.getChildAt(0).getY() != 0){
+                    mbottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
     }
 
     private List<AppInfo> getInstalledApps() {
@@ -58,12 +73,12 @@ public class HomeFragment extends Fragment {
 
         Intent i = new Intent(Intent.ACTION_MAIN, null);
         i.addCategory(Intent.CATEGORY_LAUNCHER);
-        List<ResolveInfo> rawAppData = getContext().getPackageManager().queryIntentActivities(i, PackageManager.ResolveInfoFlags.of(0));
+        List<ResolveInfo> rawAppData = requireContext().getPackageManager().queryIntentActivities(i, PackageManager.ResolveInfoFlags.of(0));
 
         for (ResolveInfo appData : rawAppData ) {
-            String appName = appData.activityInfo.loadLabel(getContext().getPackageManager()).toString();
+            String appName = appData.activityInfo.loadLabel(requireContext().getPackageManager()).toString();
             String appPackageName = appData.activityInfo.packageName;
-            Drawable appIcon = appData.activityInfo.loadIcon(getContext().getPackageManager());
+            Drawable appIcon = appData.activityInfo.loadIcon(requireContext().getPackageManager());
 
             AppInfo app = new AppInfo(appName, appPackageName, appIcon);
 
