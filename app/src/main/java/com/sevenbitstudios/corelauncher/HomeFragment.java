@@ -12,6 +12,7 @@ import android.widget.GridView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.sevenbitstudios.corelauncher.databinding.FragmentHomeBinding;
@@ -20,7 +21,9 @@ import java.util.List;
 
 public class HomeFragment extends Fragment {
 
+    ViewPager cViewPagerAdapter;
     List<AppInfo> appList = new ArrayList<>();
+    
 
     @Override
     public View onCreateView(
@@ -32,11 +35,18 @@ public class HomeFragment extends Fragment {
 
         return homeBinding.getRoot();
     }
-
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        initializeHome(view);
         initializeGridDrawer(view);
+    }
+
+    private void initializeHome(View view) {
+        cViewPagerAdapter = view.findViewById(R.id.homePager);
+        ArrayList<PagerObj> homePages = new ArrayList<>();
+
+        cViewPagerAdapter.setAdapter(new ViewPagerAdapter(view.getContext(), homePages));
     }
 
 
