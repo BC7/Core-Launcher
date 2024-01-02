@@ -1,13 +1,16 @@
 package com.sevenbitstudios.corelauncher;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.GridView;
 
 import androidx.annotation.NonNull;
@@ -23,7 +26,12 @@ public class HomeFragment extends Fragment {
 
     ViewPager cViewPagerAdapter;
     List<AppInfo> appList = new ArrayList<>();
-    
+    ArrayList<PagerObj> homePages = new ArrayList<>();
+
+    int cellHeight;
+    int MAX_HOME_ROW_COUNT = 5;
+    int DRAWER_PEEK_HEIGHT_DP = 105;
+    int DRAWER_PEEK_HEIGHT = 0;
 
     @Override
     public View onCreateView(
@@ -33,10 +41,18 @@ public class HomeFragment extends Fragment {
 
         FragmentHomeBinding homeBinding = FragmentHomeBinding.inflate(inflater, container, false);
 
+        ActionBar actionBar = requireActivity().getActionBar();
+
+        if (actionBar != null) {
+            actionBar.hide();
+        }
+
         return homeBinding.getRoot();
     }
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        DRAWER_PEEK_HEIGHT = convertDPtoPX(DRAWER_PEEK_HEIGHT_DP);
 
         initializeHome(view);
         initializeGridDrawer(view);
@@ -44,11 +60,10 @@ public class HomeFragment extends Fragment {
 
     private void initializeHome(View view) {
         cViewPagerAdapter = view.findViewById(R.id.homePager);
-        ArrayList<PagerObj> homePages = new ArrayList<>();
 
-        cViewPagerAdapter.setAdapter(new ViewPagerAdapter(view.getContext(), homePages));
+        cellHeight = (getDisplayContentHeight() - DRAWER_PEEK_HEIGHT) / MAX_HOME_ROW_COUNT;
+        cViewPagerAdapter.setAdapter(new ViewPagerAdapter(view.getContext(), homePages, cellHeight));
     }
-
 
     private void initializeGridDrawer(View view) {
         GridView mHomeDrawerGridView = view.findViewById(R.id.homeDrawerGrid);
@@ -57,7 +72,9 @@ public class HomeFragment extends Fragment {
 
         appList = getInstalledApps();
 
-        mHomeDrawerGridView.setAdapter(new DrawerGridViewAdapter(view.getContext(), appList));
+        mbottomSheetBehavior.setHideable(false);
+        mbottomSheetBehavior.setPeekHeight(DRAWER_PEEK_HEIGHT);
+        mHomeDrawerGridView.setAdapter(new DrawerGridViewAdapter(view.getContext(), appList, cellHeight));
 
         mbottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -103,5 +120,30 @@ public class HomeFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+    }
+
+    private int getDisplayContentHeight() {
+        final WindowManager windowManager = requireActivity().getWindowManager();
+        int resourceID = requireActivity().getResources().getIdentifier("status_bar_height", "dimen", "android");
+        int contentTop = requireActivity().findViewById(android.R.id.content).getTop();
+        int actionBarHeight = 0;
+        int screenHeight = 0;
+        int statusBarHeight = 0;
+
+        if (requireActivity().getActionBar() != null){
+            actionBarHeight = requireActivity().getActionBar().getHeight();
+        }
+
+        if (resourceID > 0) {
+            statusBarHeight = requireActivity().getResources().getDimensionPixelSize(resourceID);
+        }
+
+        screenHeight = windowManager.getCurrentWindowMetrics().getBounds().height();
+
+        return screenHeight - contentTop - actionBarHeight - statusBarHeight;
+    }
+
+    private int convertDPtoPX(int dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, requireActivity().getResources().getDisplayMetrics());
     }
 }

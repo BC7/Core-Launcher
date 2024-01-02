@@ -16,10 +16,12 @@ import java.util.List;
 public class DrawerGridViewAdapter extends BaseAdapter {
     Context context;
     List<AppInfo> appListDataSet;
+    int cellHeight;
 
-    public DrawerGridViewAdapter(Context context, List<AppInfo> appListData){
+    public DrawerGridViewAdapter(Context context, List<AppInfo> appListData, int cellHeight){
         this.context = context;
         this.appListDataSet = appListData;
+        this.cellHeight = cellHeight;
     }
     @Override
     public int getCount() {
@@ -47,21 +49,20 @@ public class DrawerGridViewAdapter extends BaseAdapter {
             v = convertView;
         }
 
-        ConstraintLayout appTile = v.findViewById((R.id.appItemLayout));
+        ConstraintLayout appTileLayout = v.findViewById((R.id.appItemLayout));
         ImageView mImage = v.findViewById(R.id.appItemIcon);
         TextView mLabel = v.findViewById(R.id.appItemNameLabel);
+        ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, cellHeight);
 
         mImage.setImageDrawable(appListDataSet.get(position).getIcon());
         mLabel.setText(appListDataSet.get(position).getName());
+        appTileLayout.setLayoutParams(layoutParams);
 
-        appTile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent launAppIntent = context.getPackageManager().getLaunchIntentForPackage(appListDataSet.get(position).getPackageName());
+        appTileLayout.setOnClickListener(view -> {
+            Intent launAppIntent = context.getPackageManager().getLaunchIntentForPackage(appListDataSet.get(position).getPackageName());
 
-                if (launAppIntent != null){
-                    context.startActivity(launAppIntent);
-                }
+            if (launAppIntent != null){
+                context.startActivity(launAppIntent);
             }
         });
 
