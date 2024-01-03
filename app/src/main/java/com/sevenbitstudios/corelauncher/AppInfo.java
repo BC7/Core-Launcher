@@ -3,9 +3,9 @@ package com.sevenbitstudios.corelauncher;
 import android.graphics.drawable.Drawable;
 
 public class AppInfo {
-    private final String name;
-    private final String packageName;
-    private final Drawable icon;
+    private String name;
+    private String packageName;
+    private Drawable icon;
 
     public AppInfo(String name, String packageName, Drawable img) {
         this.name = name;
@@ -17,4 +17,15 @@ public class AppInfo {
     public String getPackageName() { return packageName; }
 
     public Drawable getIcon() { return icon;}
+
+    public void setName(String name){
+        this.name = name;
+    }
+    public void setPackageName(String packageName){
+        this.packageName = packageName;
+    }
+    public void setIcon(Drawable icon){
+        this.icon = icon;
+    }
+
 }
