@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.GridView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
@@ -22,16 +23,19 @@ import com.sevenbitstudios.corelauncher.databinding.FragmentHomeBinding;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements GridViewAdapter.EventListener {
 
-    ViewPager cViewPagerAdapter;
+    MainActivity mainActivity;
+    AppInfo focusedApp;
+    ViewPager cViewPager;
+    ViewPagerAdapter cViewPagerAdapter;
     List<AppInfo> appList = new ArrayList<>();
     ArrayList<PagerObj> homePages = new ArrayList<>();
 
     int cellHeight;
     int MAX_HOME_ROW_COUNT = 5;
     int DRAWER_PEEK_HEIGHT_DP = 105;
-    int DRAWER_PEEK_HEIGHT = 0;
+    int DRAWER_PEEK_HEIGHT = 112;
 
     @Override
     public View onCreateView(
@@ -43,6 +47,8 @@ public class HomeFragment extends Fragment {
 
         ActionBar actionBar = requireActivity().getActionBar();
 
+        mainActivity = (MainActivity) getActivity();
+
         if (actionBar != null) {
             actionBar.hide();
         }
@@ -52,17 +58,42 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        DRAWER_PEEK_HEIGHT = convertDPtoPX(DRAWER_PEEK_HEIGHT_DP);
+//        DRAWER_PEEK_HEIGHT = convertDPtoPX(DRAWER_PEEK_HEIGHT_DP);
 
         initializeHome(view);
         initializeGridDrawer(view);
     }
 
     private void initializeHome(View view) {
-        cViewPagerAdapter = view.findViewById(R.id.homePager);
 
+//      START SAMPLE DATA (ToDo - REMOVE)
+        ArrayList<AppInfo> appDataList1 = new ArrayList<>();
+        ArrayList<AppInfo> appDataList2 = new ArrayList<>();
+        ArrayList<AppInfo> appDataList3 = new ArrayList<>();
+
+        for (int i = 0; i < 20; i++) {
+            final AppInfo appSample = new AppInfo("App #" + i, String.valueOf(i), AppCompatResources.getDrawable(requireContext().getApplicationContext(), R.drawable.ic_launcher_foreground));
+            appDataList1.add(appSample);
+        }
+        for (int i = 0; i < 20; i++) {
+            final AppInfo appSample = new AppInfo("App #" + i, String.valueOf(i), AppCompatResources.getDrawable(requireContext().getApplicationContext(), R.drawable.ic_launcher_foreground));
+            appDataList2.add(appSample);
+        }
+        for (int i = 0; i < 20; i++) {
+            final AppInfo appSample = new AppInfo("App #" + i, String.valueOf(i), AppCompatResources.getDrawable(requireContext().getApplicationContext(), R.drawable.ic_launcher_foreground));
+            appDataList3.add(appSample);
+        }
+
+        homePages.add(new PagerObj(appDataList1));
+        homePages.add(new PagerObj(appDataList2));
+        homePages.add(new PagerObj(appDataList3));
+//        END SAMPLE DATA
+
+        cViewPager = view.findViewById(R.id.homePager);
         cellHeight = (getDisplayContentHeight() - DRAWER_PEEK_HEIGHT) / MAX_HOME_ROW_COUNT;
-        cViewPagerAdapter.setAdapter(new ViewPagerAdapter(view.getContext(), homePages, cellHeight));
+
+        cViewPagerAdapter =  new ViewPagerAdapter(view.getContext(), homePages, cellHeight, this);
+        cViewPager.setAdapter(cViewPagerAdapter);
     }
 
     private void initializeGridDrawer(View view) {
@@ -74,12 +105,17 @@ public class HomeFragment extends Fragment {
 
         mbottomSheetBehavior.setHideable(false);
         mbottomSheetBehavior.setPeekHeight(DRAWER_PEEK_HEIGHT);
-        mHomeDrawerGridView.setAdapter(new DrawerGridViewAdapter(view.getContext(), appList, cellHeight));
+        mHomeDrawerGridView.setAdapter(new GridViewAdapter(this.getContext(), appList, cellHeight, this));
 
         mbottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if (newState == BottomSheetBehavior.STATE_HIDDEN && mHomeDrawerGridView.getChildAt(0).getY() != 0){
+
+                if(focusedApp != null ){
+                    return;
+                }
+
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED && mHomeDrawerGridView.getChildAt(0).getY() != 0){
                     mbottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 }
                 if (newState == BottomSheetBehavior.STATE_DRAGGING && mHomeDrawerGridView.getChildAt(0).getY() != 0){
@@ -142,8 +178,41 @@ public class HomeFragment extends Fragment {
 
         return screenHeight - contentTop - actionBarHeight - statusBarHeight;
     }
+    @Override
+    public void appItemOnClick (AppInfo app){
+
+        if (focusedApp != null ) {
+            app.setName(focusedApp.getName());
+            app.setPackageName(focusedApp.getPackageName());
+            app.setIcon(focusedApp.getIcon());
+            focusedApp = null;
+            cViewPagerAdapter.notifyGridChange();
+        } else {
+
+            Intent launAppIntent = mainActivity.getApplicationContext().getPackageManager().getLaunchIntentForPackage(app.getPackageName());
+
+            if (launAppIntent != null){
+                mainActivity.getApplicationContext().startActivity(launAppIntent);
+            }
+
+        }
+    }
+    public void appItemOnLongClick (AppInfo app){
+        collapseDrawer();
+        focusedApp = app;
+    }
+
+    private void collapseDrawer() {
+
+        View homeBottomSheet = mainActivity.findViewById((R.id.homeBottomSheet));
+        final BottomSheetBehavior<View> homeBottomSheetBehavior = BottomSheetBehavior.from(homeBottomSheet);
+
+        homeBottomSheet.setY(0);
+        homeBottomSheetBehavior.setState(homeBottomSheetBehavior.STATE_COLLAPSED);
+    }
 
     private int convertDPtoPX(int dp) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, requireActivity().getResources().getDisplayMetrics());
     }
+
 }

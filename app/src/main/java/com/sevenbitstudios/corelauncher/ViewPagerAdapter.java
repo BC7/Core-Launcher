@@ -14,12 +14,15 @@ import java.util.ArrayList;
 public class ViewPagerAdapter extends PagerAdapter {
     Context context;
     ArrayList<PagerObj> appList;
+    ArrayList<GridViewAdapter> gridViewAdapterList = new ArrayList<>();
     int cellHeight;
+    GridViewAdapter.EventListener listener;
 
-    public ViewPagerAdapter(Context context, ArrayList<PagerObj> pagerAppList, int cellHeight) {
+    public ViewPagerAdapter(Context context, ArrayList<PagerObj> pagerAppList, int cellHeight, GridViewAdapter.EventListener listener) {
         this.context = context;
         this.appList = pagerAppList;
         this.cellHeight = cellHeight;
+        this.listener = listener;
     }
 
     @NonNull
@@ -29,8 +32,10 @@ public class ViewPagerAdapter extends PagerAdapter {
         ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.pager_layout, container, false);
 
         final GridView cPagerGridView = layout.findViewById(R.id.pager_grid_view);
+        GridViewAdapter gridViewAdapter = new GridViewAdapter(context, appList.get(position).getAppList(), cellHeight, this.listener);
+        cPagerGridView.setAdapter(gridViewAdapter);
 
-        cPagerGridView.setAdapter(new DrawerGridViewAdapter(context, appList.get(position).getAppList(), cellHeight));
+        gridViewAdapterList.add(gridViewAdapter);
 
         container.addView(layout);
         return layout;
@@ -49,5 +54,11 @@ public class ViewPagerAdapter extends PagerAdapter {
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         container.removeView((View) object);
+    }
+
+    public void notifyGridChange(){
+        for (int i = 0; i < gridViewAdapterList.size(); i++) {
+            gridViewAdapterList.get(i).notifyDataSetChanged();
+        }
     }
 }

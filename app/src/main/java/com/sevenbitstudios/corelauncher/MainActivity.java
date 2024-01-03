@@ -1,6 +1,8 @@
 package com.sevenbitstudios.corelauncher;
 
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -9,7 +11,6 @@ import androidx.navigation.ui.NavigationUI;
 import com.sevenbitstudios.corelauncher.databinding.ActivityMainBinding;
 import android.view.Menu;
 import android.view.MenuItem;
-
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;
@@ -34,11 +35,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up testBtn, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+//        int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
 //        if (id == R.id.action_settings) {
@@ -54,4 +55,5 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, appBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
 }
