@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.GridView;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -60,9 +62,26 @@ public class HomeFragment extends Fragment implements GridViewAdapter.EventListe
 
 //        DRAWER_PEEK_HEIGHT = convertDPtoPX(DRAWER_PEEK_HEIGHT_DP);
 
-        initializeHome(view);
-        initializeGridDrawer(view);
+        final LinearLayout homeTopDrawerLayout = view.findViewById(R.id.topDrawerLayout);
+
+        homeTopDrawerLayout.post( () -> {
+            DRAWER_PEEK_HEIGHT = homeTopDrawerLayout.getHeight();
+            initializeHome(view);
+            initializeGridDrawer(view);
+        });
+
+        ImageButton settingsBtn = view.findViewById(R.id.settings);
+
+        settingsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getContext(), SettingsActivity.class));
+            }
+        });
     }
+
+
+
 
     private void initializeHome(View view) {
 
@@ -72,15 +91,15 @@ public class HomeFragment extends Fragment implements GridViewAdapter.EventListe
         ArrayList<AppInfo> appDataList3 = new ArrayList<>();
 
         for (int i = 0; i < 20; i++) {
-            final AppInfo appSample = new AppInfo("App #" + i, String.valueOf(i), AppCompatResources.getDrawable(requireContext().getApplicationContext(), R.drawable.ic_launcher_foreground));
+            final AppInfo appSample = new AppInfo("App", String.valueOf(i), AppCompatResources.getDrawable(requireContext().getApplicationContext(), R.drawable.ic_launcher_foreground), false);
             appDataList1.add(appSample);
         }
         for (int i = 0; i < 20; i++) {
-            final AppInfo appSample = new AppInfo("App #" + i, String.valueOf(i), AppCompatResources.getDrawable(requireContext().getApplicationContext(), R.drawable.ic_launcher_foreground));
+            final AppInfo appSample = new AppInfo("App", String.valueOf(i), AppCompatResources.getDrawable(requireContext().getApplicationContext(), R.drawable.ic_launcher_foreground), false);
             appDataList2.add(appSample);
         }
         for (int i = 0; i < 20; i++) {
-            final AppInfo appSample = new AppInfo("App #" + i, String.valueOf(i), AppCompatResources.getDrawable(requireContext().getApplicationContext(), R.drawable.ic_launcher_foreground));
+            final AppInfo appSample = new AppInfo("App", String.valueOf(i), AppCompatResources.getDrawable(requireContext().getApplicationContext(), R.drawable.ic_launcher_foreground), false);
             appDataList3.add(appSample);
         }
 
@@ -116,7 +135,7 @@ public class HomeFragment extends Fragment implements GridViewAdapter.EventListe
                 }
 
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED && mHomeDrawerGridView.getChildAt(0).getY() != 0){
-                    mbottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    mbottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
                 if (newState == BottomSheetBehavior.STATE_DRAGGING && mHomeDrawerGridView.getChildAt(0).getY() != 0){
                     mbottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -129,6 +148,9 @@ public class HomeFragment extends Fragment implements GridViewAdapter.EventListe
             }
         });
     }
+
+
+
 
     private List<AppInfo> getInstalledApps() {
         List<AppInfo> appList = new ArrayList<>();
@@ -143,7 +165,7 @@ public class HomeFragment extends Fragment implements GridViewAdapter.EventListe
             String appPackageName = appData.activityInfo.packageName;
             Drawable appIcon = appData.activityInfo.loadIcon(requireContext().getPackageManager());
 
-            AppInfo app = new AppInfo(appName, appPackageName, appIcon);
+            AppInfo app = new AppInfo(appName, appPackageName, appIcon, true);
 
             if (!appList.contains(app)){
                 appList.add(app);
@@ -178,13 +200,29 @@ public class HomeFragment extends Fragment implements GridViewAdapter.EventListe
 
         return screenHeight - contentTop - actionBarHeight - statusBarHeight;
     }
+
+
+
+
+
     @Override
     public void appItemOnClick (AppInfo app){
+
+        if (focusedApp != null && !app.getName().equals("App")) {
+            return;
+        }
 
         if (focusedApp != null ) {
             app.setName(focusedApp.getName());
             app.setPackageName(focusedApp.getPackageName());
             app.setIcon(focusedApp.getIcon());
+            app.setIsInDrawer(false);
+            if (!focusedApp.getIsInDrawer()){
+                focusedApp.setName("");
+                focusedApp.setPackageName("");
+                focusedApp.setIcon(focusedApp.getIcon());
+                focusedApp.setIsInDrawer(false);
+            }
             focusedApp = null;
             cViewPagerAdapter.notifyGridChange();
         } else {
@@ -207,7 +245,7 @@ public class HomeFragment extends Fragment implements GridViewAdapter.EventListe
         View homeBottomSheet = mainActivity.findViewById((R.id.homeBottomSheet));
         final BottomSheetBehavior<View> homeBottomSheetBehavior = BottomSheetBehavior.from(homeBottomSheet);
 
-        homeBottomSheet.setY(0);
+        homeBottomSheet.setY(DRAWER_PEEK_HEIGHT);
         homeBottomSheetBehavior.setState(homeBottomSheetBehavior.STATE_COLLAPSED);
     }
 

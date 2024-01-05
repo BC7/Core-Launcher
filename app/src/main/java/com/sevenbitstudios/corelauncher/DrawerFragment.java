@@ -95,7 +95,7 @@ public class DrawerFragment extends Fragment {
 
     private void initSampleDataset() {
         for (int i = 0; i < DATASET_COUNT; i++) {
-            final AppInfo appSample = new AppInfo(String.valueOf(i), String.valueOf(i), ResourcesCompat.getDrawable(getResources(), R.drawable.ic_launcher_foreground, null));
+            final AppInfo appSample = new AppInfo(String.valueOf(i), String.valueOf(i), ResourcesCompat.getDrawable(getResources(), R.drawable.ic_launcher_foreground, null), true);
             mDataset.add(appSample);
         }
     }

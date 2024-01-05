@@ -10,6 +10,12 @@
     tools:context=".HomeFragment"
     android:fillViewport="true">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/ic_launcher_background"
+        android:scaleType="centerCrop"
+        android:id="@+id/homeBackgroundView"/>
         <androidx.viewpager.widget.ViewPager
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -25,6 +31,23 @@
             app:behavior_peekHeight="105dp"
             app:layout_behavior="@string/bottom_sheet_behavior"
             >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/topDrawerLayout">
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@android:drawable/ic_lock_lock"
+                        android:id="@+id/settings" />
+                </LinearLayout>
             <GridView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -32,6 +55,7 @@
                 android:numColumns="4"
                 android:stretchMode="columnWidth">
             </GridView>
+            </LinearLayout>
         </FrameLayout>
 
 
