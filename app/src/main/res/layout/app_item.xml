@@ -25,6 +25,8 @@
         android:textColor="@android:color/holo_green_dark"
         android:shadowColor="@android:color/black"
         android:shadowRadius="10"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         android:textAlignment="center"
         android:layout_gravity="center|bottom"/>
 
