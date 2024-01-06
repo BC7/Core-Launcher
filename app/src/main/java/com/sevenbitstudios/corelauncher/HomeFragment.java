@@ -78,8 +78,41 @@ public class HomeFragment extends Fragment implements GridViewAdapter.EventListe
                 startActivity(new Intent(getContext(), SettingsActivity.class));
             }
         });
+        initializeHome(view);
+        initializeGridDrawer(view);
     }
 
+    private void initializeHome(View view) {
+
+//      START SAMPLE DATA (ToDo - REMOVE)
+        ArrayList<AppInfo> appDataList1 = new ArrayList<>();
+        ArrayList<AppInfo> appDataList2 = new ArrayList<>();
+        ArrayList<AppInfo> appDataList3 = new ArrayList<>();
+
+        for (int i = 0; i < 20; i++) {
+            final AppInfo appSample = new AppInfo("App #" + i, String.valueOf(i), AppCompatResources.getDrawable(requireContext().getApplicationContext(), R.drawable.ic_launcher_foreground));
+            appDataList1.add(appSample);
+        }
+        for (int i = 0; i < 20; i++) {
+            final AppInfo appSample = new AppInfo("App #" + i, String.valueOf(i), AppCompatResources.getDrawable(requireContext().getApplicationContext(), R.drawable.ic_launcher_foreground));
+            appDataList2.add(appSample);
+        }
+        for (int i = 0; i < 20; i++) {
+            final AppInfo appSample = new AppInfo("App #" + i, String.valueOf(i), AppCompatResources.getDrawable(requireContext().getApplicationContext(), R.drawable.ic_launcher_foreground));
+            appDataList3.add(appSample);
+        }
+
+        homePages.add(new PagerObj(appDataList1));
+        homePages.add(new PagerObj(appDataList2));
+        homePages.add(new PagerObj(appDataList3));
+//        END SAMPLE DATA
+
+        cViewPager = view.findViewById(R.id.homePager);
+        cellHeight = (getDisplayContentHeight() - DRAWER_PEEK_HEIGHT) / MAX_HOME_ROW_COUNT;
+
+        cViewPagerAdapter =  new ViewPagerAdapter(view.getContext(), homePages, cellHeight, this);
+        cViewPager.setAdapter(cViewPagerAdapter);
+    }
 
 
 
@@ -207,10 +240,6 @@ public class HomeFragment extends Fragment implements GridViewAdapter.EventListe
 
     @Override
     public void appItemOnClick (AppInfo app){
-
-        if (focusedApp != null && !app.getName().equals("App")) {
-            return;
-        }
 
         if (focusedApp != null ) {
             app.setName(focusedApp.getName());
